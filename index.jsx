@@ -1,16 +1,30 @@
-import {View, Text, Button, StyleSheet, ImageBackground, Pressable} from 'react-native';
-import {Link} from 'expo-router';
+import {View, Text, Button, StyleSheet, ImageBackground} from 'react-native';
+import React, { useState } from 'react';
 import coffee from "@/assets/images/coffee.jpg";
 import Axios from "axios";
 
-const getJoke =()=> {
-  Axios.get ("https://official-joke-api.appspot.com/random_joke")
-  .then ((response) => {
-    console.log (response)
-  });
-};
 
 const app =()=> {
+  const [joke, setJoke] = useState ("");
+  const [riddle, getRiddle] = useState ("");
+
+  // Using AXIOS
+  const getJoke =()=> {
+  Axios.get ("https://official-joke-api.appspot.com/random_joke")
+  .then (response => {
+    setJoke (response.data.setup + "..." + response.data.punchline);
+  });
+}
+
+// Using FETCH
+  const fetchRiddle =()=> {
+  fetch ("https://riddles-api.vercel.app/random")
+  .then (response => response.json())
+  .then (data => {
+    setJoke (data.riddle + "..." + data.answer)
+  })
+};
+
   return (
     <View style={styles.container}> 
       <ImageBackground
@@ -18,19 +32,16 @@ const app =()=> {
       resizeMode = "cover"
       style={styles.image}      
       > 
-      <Text style={styles.text}>Welcome to Hospital Locator</Text>
-      <Text>TESTING TESTING</Text>
+      <Text style={{textAlign: 'center'}}>{joke}</Text>
+      <Text style={{textAlign: 'center'}}>{riddle}</Text>
       <Button
       onPress={getJoke}
       title="JOKE PRESS"
       />
-
-      <Link href="/map" style={{marginHorizontal: 'auto'}}
-      asChild>
-      <Pressable style={styles.button}>
-        <Text style={styles.buttonText}>SEE HOSPITALS NEAR YOU</Text>
-      </Pressable>
-      </Link>     
+      <Button
+      onPress={fetchRiddle}
+      title="RIDDLE PRESS"
+      />   
       </ImageBackground>
     </View>
   )
@@ -49,37 +60,4 @@ const styles = StyleSheet.create ({
   resizeMode: 'cover',
   justifyContent: 'center',
   },
-  text: {
-    color: 'white',
-    fontSize: 42,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    marginBottom: 120,
-  },
-  link: {
-    color: 'white',
-    fontSize: 42,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 4,
-  },
-  button: {
-    height: 60,
-    borderRadius: 20,
-    justifyContent: 'center',
-    backgroundColor: 'rgba (0,0,0,0.75)',
-    padding: 6,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 4,
-  }
 })
